@@ -1,26 +1,14 @@
-# JobNest — Student Job & Internship Portal
+# JobNest — Student Job Portal
 
-> **CSE 224 — Database Management System Laboratory Project**
+>Database Management System Lab Project \
+Developed by Mehedi Hasan \
+ID : 242-115-250 \
+Batch: CSE – 61st\
+Section: E \
+Department of Computer Science and Engineering \
+Metropolitan University, Sylhet
 
-A full-stack web application that connects university students with job and internship opportunities. Built with **Node.js / Express**, **MySQL**, and **EJS + Bootstrap 5**.
-
----
-
-## Features
-
-| Module | Operations |
-|---|---|
-| **Students** | Add, view profile, edit, delete (cascades to applications) |
-| **Companies** | Add, view with job list, edit, delete (cascades to jobs + applications) |
-| **Jobs** | Post, view with applicants, edit (open/close), delete |
-| **Applications** | Submit, view all, update status, withdraw |
-
-**Database highlights:**  
-- 4 normalized tables (3NF) with PK / FK / UNIQUE constraints  
-- 3 Triggers (salary guard × 2, closed-job guard)  
-- 2 Views (`vw_active_jobs`, `vw_application_details`)  
-- 3 Stored Procedures (`sp_get_student_applications`, `sp_get_job_applicants`, `sp_close_expired_jobs`)  
-- Server-side validation on every INSERT / UPDATE  
+A full-stack web application that allows students to browse job listings, and companies to post opportunities. Built as a practical demonstration of relational database design, SQL operations, and server-side web development.
 
 ---
 
@@ -28,76 +16,74 @@ A full-stack web application that connects university students with job and inte
 
 | Layer | Technology |
 |---|---|
-| Frontend | HTML5, EJS templates, Bootstrap 5, Bootstrap Icons |
-| Backend | Node.js 18+, Express 4 |
-| Database | MySQL 8 / MariaDB 10.6+ (via XAMPP) |
-| DB Driver | `mysql2` (promise API) |
-| Utilities | `method-override` (PUT/DELETE in forms), `dotenv` |
+| Frontend | HTML5, EJS, Bootstrap 5 |
+| Backend | Node.js, Express.js |
+| Database | MySQL (via XAMPP) |
+| DB Driver | mysql2 |
 
 ---
 
-## Prerequisites
+## Features
 
-- [XAMPP](https://www.apachefriends.org/) (or any MySQL 8 / MariaDB server)  
-- [Node.js 18+](https://nodejs.org/)  
-- [Git](https://git-scm.com/)
+- Register and manage student profiles
+- Register companies and post job or internship listings
+- Browse available jobs and submit applications
+- Update application status (Pending, Reviewed, Accepted, Rejected)
+- Full CRUD operations across all four entities
+- Server-side input validation on all forms
 
 ---
 
-## Quick Start
+## Database Design
 
-### 1 — Clone the repository
+The database (`jobnest_db`) contains four tables: **Students**, **Companies**, **Jobs**, and **Applications**. The schema is normalized to 3NF with primary keys, foreign keys, and a unique constraint to prevent duplicate applications.
 
+The database also includes views, triggers, and stored procedures to demonstrate advanced SQL concepts covered in the course.
+
+---
+
+## Getting Started
+
+### Requirements
+
+- [XAMPP](https://www.apachefriends.org/) with MySQL running
+- [Node.js 18+](https://nodejs.org/)
+
+### Setup
+
+**1. Clone the repository**
 ```bash
-git clone https://github.com/<YOUR_USERNAME>/jobnest.git
+git clone https://github.com/mehedi-05/jobnest.git
 cd jobnest
 ```
 
-### 2 — Install Node.js dependencies
-
+**2. Install dependencies**
 ```bash
 npm install
 ```
 
-### 3 — Configure environment variables
+**3. Configure environment variables**
 
-```bash
-cp .env.example .env
+Copy `.env.example` to `.env` and fill in your MySQL credentials:
 ```
-
-Open `.env` and set your MySQL credentials:
-
-```env
 DB_HOST=localhost
 DB_PORT=3306
 DB_USER=root
-DB_PASSWORD=          # blank for default XAMPP
+DB_PASSWORD=
 DB_NAME=jobnest_db
 PORT=3000
 ```
 
-### 4 — Import the database
+**4. Import the database**
 
-Start **Apache** and **MySQL** in XAMPP, then run **one** of:
+Open `http://localhost/phpmyadmin`, click **Import**, select `database/schema.sql`, and click **Go**.
 
-**Option A — phpMyAdmin (GUI):**
-1. Go to `http://localhost/phpmyadmin`
-2. Click **Import** → choose `database/schema.sql` → **Go**
-
-**Option B — MySQL CLI:**
-```bash
-mysql -u root -p < database/schema.sql
-```
-
-This creates the `jobnest_db` database, all 4 tables, views, triggers, stored procedures, and loads sample data.
-
-### 5 — Start the server
-
+**5. Start the server**
 ```bash
 npm start
 ```
 
-Open your browser at **http://localhost:3000**
+Visit `http://localhost:3000`
 
 ---
 
@@ -105,140 +91,52 @@ Open your browser at **http://localhost:3000**
 
 ```
 jobnest/
-├── app.js                    # Express entry point
-├── .env.example              # Environment variable template
-├── .gitignore
+├── app.js
 ├── package.json
-│
+├── .env.example
 ├── config/
-│   └── db.js                 # MySQL connection pool (mysql2)
-│
+│   └── db.js
 ├── controllers/
-│   ├── studentController.js  # CRUD for Students
-│   ├── companyController.js  # CRUD for Companies
-│   ├── jobController.js      # CRUD for Jobs
-│   └── applicationController.js # CRUD for Applications
-│
+│   ├── studentController.js
+│   ├── companyController.js
+│   ├── jobController.js
+│   └── applicationController.js
 ├── routes/
 │   ├── studentRoutes.js
 │   ├── companyRoutes.js
 │   ├── jobRoutes.js
 │   └── applicationRoutes.js
-│
 ├── middleware/
-│   ├── validators.js         # Hand-written server-side validation
-│   └── errorHandler.js       # Centralized 404 + 500 error handling
-│
+│   ├── validators.js
+│   └── errorHandler.js
 ├── views/
-│   ├── layout.ejs            # Master layout (navbar + footer)
-│   ├── index.ejs             # Dashboard with stats + latest jobs
-│   ├── error.ejs             # Error page
+│   ├── layout.ejs
 │   ├── partials/
-│   │   ├── navbar.ejs
-│   │   ├── footer.ejs
-│   │   └── errors.ejs        # Reusable validation error list
-│   ├── students/             # list, show, form
-│   ├── companies/            # list, show, form
-│   ├── jobs/                 # list, show, form
-│   └── applications/         # list, form
-│
+│   ├── students/
+│   ├── companies/
+│   ├── jobs/
+│   └── applications/
 ├── public/
-│   └── css/style.css         # Custom styles (complements Bootstrap 5)
-│
+│   └── css/
 └── database/
-    └── schema.sql            # Full DB setup: tables, views, triggers, SPs, sample data
+    └── schema.sql
 ```
 
 ---
 
-## URL Routes
+## Sample Data
 
-| Method | URL | Action |
-|---|---|---|
-| GET | `/` | Dashboard |
-| GET | `/students` | List all students |
-| GET | `/students/new` | Add student form |
-| POST | `/students` | Create student |
-| GET | `/students/:id` | Student profile + applications |
-| GET | `/students/:id/edit` | Edit student form |
-| PUT | `/students/:id` | Update student |
-| DELETE | `/students/:id` | Delete student |
-| GET | `/companies` | List all companies |
-| GET | `/companies/new` | Add company form |
-| POST | `/companies` | Create company |
-| GET | `/companies/:id` | Company profile + jobs |
-| GET | `/companies/:id/edit` | Edit company form |
-| PUT | `/companies/:id` | Update company |
-| DELETE | `/companies/:id` | Delete company |
-| GET | `/jobs` | All job listings |
-| GET | `/jobs/new` | Post job form |
-| POST | `/jobs` | Create job |
-| GET | `/jobs/:id` | Job detail + applicants |
-| GET | `/jobs/:id/edit` | Edit job form |
-| PUT | `/jobs/:id` | Update job |
-| DELETE | `/jobs/:id` | Delete job |
-| GET | `/applications` | All applications |
-| GET | `/applications/new` | Submit application form |
-| POST | `/applications` | Create application |
-| GET | `/applications/:id/edit` | Edit application status |
-| PUT | `/applications/:id` | Update status |
-| DELETE | `/applications/:id` | Delete application |
+The SQL script loads sample data including 6 students, 4 companies, 8 job listings, and 10 applications so the application can be tested immediately after setup.
 
 ---
 
-## Validation Rules
-
-| Field | Rule |
-|---|---|
-| Name / Company Name / Job Title | Required, non-empty |
-| Email (all entities) | Required, valid format (`user@domain.com`), unique |
-| Semester | Integer 1–12 |
-| Salary | Optional; if given, must be a positive number |
-| Deadline | Required; must be a future date |
-| Application Status | Must be: `Pending`, `Reviewed`, `Accepted`, or `Rejected` |
-| Duplicate application | Blocked at DB level (`UNIQUE` on `student_id, job_id`) |
-
----
-
-## Troubleshooting
+## Common Issues
 
 | Problem | Fix |
 |---|---|
-| `ER_ACCESS_DENIED_ERROR` | Check `DB_USER` / `DB_PASSWORD` in `.env` |
-| `ECONNREFUSED` | Start MySQL in XAMPP first |
-| `ER_BAD_DB_ERROR` | Re-run `schema.sql` — database may not have been created |
-| Port 3000 already in use | Change `PORT=3001` in `.env` |
-| `Cannot find module 'mysql2'` | Run `npm install` |
-| Forms submitting blank | Ensure XAMPP Apache is running and `mysql2` is installed |
+| Cannot connect to MySQL | Start MySQL in XAMPP Control Panel |
+| `ER_BAD_DB_ERROR` | Import `schema.sql` via phpMyAdmin |
+| Port 3000 in use | Change `PORT=3001` in `.env` |
+| Module not found | Run `npm install` |
 
 ---
-
-## GitHub Upload
-
-```bash
-# Inside the project folder:
-git init
-git add .
-git commit -m "feat: initial JobNest DBMS lab project submission"
-git branch -M main
-git remote add origin https://github.com/<YOUR_USERNAME>/jobnest.git
-git push -u origin main
-```
-
-**Files that must NOT be pushed:**
-- `.env` (contains your database password) — already in `.gitignore`
-- `node_modules/` — already in `.gitignore`
-
----
-
-## Sample Data Included
-
-The `schema.sql` loads:
-- 6 Students
-- 4 Companies
-- 8 Jobs (7 Open, 1 Closed)
-- 10 Applications (across all 4 statuses)
-
----
-
-*Developed for CSE 224 — Database Management System Laboratory*
