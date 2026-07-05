@@ -1,0 +1,78 @@
+<!-- views/students/form.ejs — Add / Edit student (shared form) -->
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h3><i class="bi bi-person-<%= student.student_id ? 'gear' : 'plus' %> me-2"></i><%= title %></h3>
+  <a href="/students" class="btn btn-outline-secondary btn-sm">
+    <i class="bi bi-arrow-left me-1"></i>Back
+  </a>
+</div>
+
+<%- include('../partials/errors') %>
+
+<div class="card shadow-sm border-0">
+  <div class="card-body">
+    <form action="<%= formAction %>" method="POST" novalidate>
+
+      <div class="mb-3">
+        <label for="name" class="form-label fw-semibold">Full Name <span class="text-danger">*</span></label>
+        <input
+          type="text"
+          id="name"
+          name="name"
+          class="form-control"
+          value="<%= student.name || '' %>"
+          placeholder="e.g. Mehedi Hasan"
+          maxlength="100"
+          required
+        />
+      </div>
+
+      <div class="mb-3">
+        <label for="email" class="form-label fw-semibold">Email Address <span class="text-danger">*</span></label>
+        <input
+          type="email"
+          id="email"
+          name="email"
+          class="form-control"
+          value="<%= student.email || '' %>"
+          placeholder="e.g. mehedi@university.edu"
+          required
+        />
+        <div class="form-text">Must be a unique, valid email address.</div>
+      </div>
+
+      <div class="mb-3">
+        <label for="department" class="form-label fw-semibold">Department <span class="text-danger">*</span></label>
+        <input
+          type="text"
+          id="department"
+          name="department"
+          class="form-control"
+          value="<%= student.department || '' %>"
+          placeholder="e.g. CSE, EEE, BBA"
+          required
+        />
+      </div>
+
+      <div class="mb-4">
+        <label for="semester" class="form-label fw-semibold">Semester <span class="text-danger">*</span></label>
+        <select id="semester" name="semester" class="form-select" required>
+          <option value="">— Select semester —</option>
+          <% for (let i = 1; i <= 12; i++) { %>
+            <option value="<%= i %>" <%= (String(student.semester) === String(i)) ? 'selected' : '' %>>
+              Semester <%= i %>
+            </option>
+          <% } %>
+        </select>
+      </div>
+
+      <div class="d-flex gap-2">
+        <button type="submit" class="btn btn-primary">
+          <i class="bi bi-check-lg me-1"></i><%= student.student_id ? 'Update Student' : 'Add Student' %>
+        </button>
+        <a href="/students" class="btn btn-outline-secondary">Cancel</a>
+      </div>
+
+    </form>
+  </div>
+</div>

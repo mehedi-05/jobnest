@@ -1,0 +1,11 @@
+<% if (typeof errors !== 'undefined' && errors.length > 0) { %>
+  <div class="alert alert-danger alert-dismissible fade show" role="alert">
+    <strong><i class="bi bi-exclamation-triangle-fill me-1"></i>Please fix the following errors:</strong>
+    <ul class="mb-0 mt-1">
+      <% errors.forEach(err => { %>
+        <li><%= err %></li>
+      <% }); %>
+    </ul>
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+  </div>
+<% } %>

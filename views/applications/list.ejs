@@ -1,0 +1,88 @@
+<!-- views/applications/list.ejs — All applications via vw_application_details view -->
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h3><i class="bi bi-file-earmark-text me-2"></i>Applications</h3>
+  <a href="/applications/new" class="btn btn-danger btn-sm">
+    <i class="bi bi-send-plus me-1"></i>New Application
+  </a>
+</div>
+
+<% if (applications.length === 0) { %>
+  <div class="alert alert-info">
+    No applications yet. <a href="/applications/new">Submit one!</a>
+  </div>
+<% } else { %>
+
+  <!-- Summary badges -->
+  <%
+    const counts = { Pending: 0, Reviewed: 0, Accepted: 0, Rejected: 0 };
+    applications.forEach(a => { if (counts[a.application_status] !== undefined) counts[a.application_status]++; });
+  %>
+  <div class="d-flex gap-2 mb-3 flex-wrap">
+    <span class="badge jn-badge-pending   fs-6 fw-normal px-3 py-2"><%= counts.Pending   %> Pending</span>
+    <span class="badge jn-badge-reviewed  fs-6 fw-normal px-3 py-2"><%= counts.Reviewed  %> Reviewed</span>
+    <span class="badge jn-badge-accepted  fs-6 fw-normal px-3 py-2"><%= counts.Accepted  %> Accepted</span>
+    <span class="badge jn-badge-rejected  fs-6 fw-normal px-3 py-2"><%= counts.Rejected  %> Rejected</span>
+  </div>
+
+  <div class="table-responsive">
+    <table class="table table-hover table-bordered align-middle">
+      <thead class="table-danger">
+        <tr>
+          <th>#</th>
+          <th>Student</th>
+          <th>Job Title</th>
+          <th>Company</th>
+          <th>Applied On</th>
+          <th class="text-center">Status</th>
+          <th class="text-center">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% applications.forEach((app, i) => { %>
+          <tr>
+            <td class="small text-muted"><%= i + 1 %></td>
+            <td>
+              <a href="/students/<%= app.student_id %>" class="text-decoration-none fw-semibold">
+                <i class="bi bi-person me-1 text-muted"></i><%= app.student_name %>
+              </a>
+              <div class="text-muted small"><%= app.department %></div>
+            </td>
+            <td>
+              <a href="/jobs/<%= app.job_id %>" class="text-decoration-none">
+                <%= app.job_title %>
+              </a>
+            </td>
+            <td>
+              <a href="/companies/<%= app.company_id %>" class="text-decoration-none text-muted small">
+                <%= app.company_name %>
+              </a>
+            </td>
+            <td class="small text-muted">
+              <%= new Date(app.application_date).toLocaleDateString('en-GB', { timeZone: 'UTC' }) %>
+            </td>
+            <td class="text-center">
+              <span class="badge jn-badge-<%= app.application_status.toLowerCase() %>">
+                <%= app.application_status %>
+              </span>
+            </td>
+            <td class="text-center">
+              <a href="/applications/<%= app.application_id %>/edit"
+                 class="btn btn-sm btn-outline-primary me-1" title="Update Status">
+                <i class="bi bi-pencil"></i>
+              </a>
+              <form action="/applications/<%= app.application_id %>?_method=DELETE"
+                    method="POST" class="d-inline"
+                    onsubmit="return confirm('Delete this application?')">
+                <button type="submit" class="btn btn-sm btn-outline-danger" title="Delete">
+                  <i class="bi bi-trash"></i>
+                </button>
+              </form>
+            </td>
+          </tr>
+        <% }); %>
+      </tbody>
+    </table>
+  </div>
+  <p class="text-muted small mt-1"><%= applications.length %> application(s) total.</p>
+<% } %>

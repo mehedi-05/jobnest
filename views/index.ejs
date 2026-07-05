@@ -1,0 +1,119 @@
+<!-- views/index.ejs — Home dashboard -->
+
+<!-- Hero -->
+<div class="jn-hero rounded-3 mb-4 text-white text-center">
+  <h1 class="display-5 fw-bold mb-0"><i class="bi bi-briefcase-fill me-2"></i>JobNest</h1>
+</div>
+
+<!-- Stats row -->
+<div class="row g-3 mb-4">
+
+  <div class="col-6 col-md-3">
+    <div class="card text-center border-0 shadow-sm h-100">
+      <div class="card-body">
+        <div class="jn-stat-icon text-primary"><i class="bi bi-people-fill"></i></div>
+        <div class="jn-stat-number"><%= stats.students %></div>
+        <div class="text-muted small">Students</div>
+      </div>
+      <a href="/students" class="stretched-link"></a>
+    </div>
+  </div>
+
+  <div class="col-6 col-md-3">
+    <div class="card text-center border-0 shadow-sm h-100">
+      <div class="card-body">
+        <div class="jn-stat-icon text-success"><i class="bi bi-building"></i></div>
+        <div class="jn-stat-number"><%= stats.companies %></div>
+        <div class="text-muted small">Companies</div>
+      </div>
+      <a href="/companies" class="stretched-link"></a>
+    </div>
+  </div>
+
+  <div class="col-6 col-md-3">
+    <div class="card text-center border-0 shadow-sm h-100">
+      <div class="card-body">
+        <div class="jn-stat-icon text-warning"><i class="bi bi-bag-check-fill"></i></div>
+        <div class="jn-stat-number"><%= stats.jobs %></div>
+        <div class="text-muted small">Open Jobs</div>
+      </div>
+      <a href="/jobs" class="stretched-link"></a>
+    </div>
+  </div>
+
+  <div class="col-6 col-md-3">
+    <div class="card text-center border-0 shadow-sm h-100">
+      <div class="card-body">
+        <div class="jn-stat-icon text-danger"><i class="bi bi-file-earmark-text-fill"></i></div>
+        <div class="jn-stat-number"><%= stats.applications %></div>
+        <div class="text-muted small">Applications</div>
+      </div>
+      <a href="/applications" class="stretched-link"></a>
+    </div>
+  </div>
+
+</div>
+
+<!-- Quick-action buttons -->
+<div class="row g-2 mb-4">
+  <div class="col-6 col-md-3">
+    <a href="/students/new" class="btn btn-outline-primary w-100">
+      <i class="bi bi-person-plus me-1"></i>Add Student
+    </a>
+  </div>
+  <div class="col-6 col-md-3">
+    <a href="/companies/new" class="btn btn-outline-success w-100">
+      <i class="bi bi-building-add me-1"></i>Add Company
+    </a>
+  </div>
+  <div class="col-6 col-md-3">
+    <a href="/jobs/new" class="btn btn-outline-warning w-100">
+      <i class="bi bi-plus-circle me-1"></i>Post Job
+    </a>
+  </div>
+  <div class="col-6 col-md-3">
+    <a href="/applications/new" class="btn btn-outline-danger w-100">
+      <i class="bi bi-send-plus me-1"></i>New Application
+    </a>
+  </div>
+</div>
+
+<!-- Latest open jobs -->
+<h4 class="mb-3"><i class="bi bi-clock-history me-1"></i>Latest Openings</h4>
+
+<% if (recentJobs.length === 0) { %>
+  <div class="alert alert-info">No open jobs at the moment. <a href="/jobs/new">Post one!</a></div>
+<% } else { %>
+  <div class="row g-3">
+    <% recentJobs.forEach(job => { %>
+      <div class="col-md-6 col-lg-4">
+        <div class="card h-100 shadow-sm border-0 jn-job-card">
+          <div class="card-body">
+            <h6 class="card-title fw-semibold mb-1"><%= job.title %></h6>
+            <p class="text-muted small mb-2">
+              <i class="bi bi-building me-1"></i><%= job.company_name %>
+              &nbsp;·&nbsp;
+              <i class="bi bi-geo-alt me-1"></i><%= job.location %>
+            </p>
+            <div class="d-flex justify-content-between align-items-center">
+              <% if (job.salary) { %>
+                <span class="badge bg-success">৳ <%= Number(job.salary).toLocaleString() %>/mo</span>
+              <% } else { %>
+                <span class="badge bg-secondary">Salary TBD</span>
+              <% } %>
+              <small class="text-muted">
+                <i class="bi bi-calendar-event me-1"></i>
+                <%= new Date(job.deadline).toLocaleDateString('en-GB', { timeZone: 'UTC' }) %>
+              </small>
+            </div>
+          </div>
+          <div class="card-footer bg-transparent border-0 pt-0">
+            <a href="/jobs/<%= job.job_id %>" class="btn btn-sm btn-outline-primary w-100">
+              View Details
+            </a>
+          </div>
+        </div>
+      </div>
+    <% }); %>
+  </div>
+<% } %>

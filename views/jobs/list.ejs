@@ -1,0 +1,101 @@
+<!-- views/jobs/list.ejs — All job listings with company info + applicant count -->
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h3><i class="bi bi-bag-check me-2"></i>Job Listings</h3>
+  <a href="/jobs/new" class="btn btn-warning btn-sm text-dark">
+    <i class="bi bi-plus-circle me-1"></i>Post a Job
+  </a>
+</div>
+
+<% if (jobs.length === 0) { %>
+  <div class="alert alert-info">
+    No jobs posted yet.
+    <% if (typeof companies !== 'undefined' && companies.length === 0) { %>
+      First <a href="/companies/new">register a company</a>, then post a job.
+    <% } else { %>
+      <a href="/jobs/new">Post the first job!</a>
+    <% } %>
+  </div>
+<% } else { %>
+
+  <!-- Filter bar: open vs closed indicator -->
+  <div class="d-flex gap-2 mb-3 flex-wrap">
+    <span class="badge bg-success fs-6 fw-normal px-3 py-2">
+      <%= jobs.filter(j => j.status === 'Open').length %> Open
+    </span>
+    <span class="badge bg-secondary fs-6 fw-normal px-3 py-2">
+      <%= jobs.filter(j => j.status === 'Closed').length %> Closed
+    </span>
+    <span class="badge bg-light text-dark border fs-6 fw-normal px-3 py-2">
+      <%= jobs.length %> Total
+    </span>
+  </div>
+
+  <div class="table-responsive">
+    <table class="table table-hover table-bordered align-middle">
+      <thead class="table-warning">
+        <tr>
+          <th>#</th>
+          <th>Job Title</th>
+          <th>Company</th>
+          <th>Location</th>
+          <th>Salary</th>
+          <th>Deadline</th>
+          <th class="text-center">Status</th>
+          <th class="text-center">Applicants</th>
+          <th class="text-center">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% jobs.forEach((job, i) => { %>
+          <tr class="<%= job.status === 'Closed' ? 'table-light text-muted' : '' %>">
+            <td class="small text-muted"><%= i + 1 %></td>
+            <td>
+              <a href="/jobs/<%= job.job_id %>" class="text-decoration-none fw-semibold">
+                <%= job.title %>
+              </a>
+            </td>
+            <td>
+              <a href="/companies/<%= job.company_id %>" class="text-decoration-none text-muted">
+                <%= job.company_name %>
+              </a>
+            </td>
+            <td class="small"><i class="bi bi-geo-alt me-1"></i><%= job.location %></td>
+            <td class="small">
+              <% if (job.salary) { %>
+                ৳ <%= Number(job.salary).toLocaleString() %>
+              <% } else { %>
+                <span class="text-muted">—</span>
+              <% } %>
+            </td>
+            <td class="small text-muted">
+              <%= new Date(job.deadline).toLocaleDateString('en-GB', { timeZone: 'UTC' }) %>
+            </td>
+            <td class="text-center">
+              <span class="badge bg-<%= job.status === 'Open' ? 'success' : 'secondary' %>">
+                <%= job.status %>
+              </span>
+            </td>
+            <td class="text-center">
+              <span class="badge bg-info text-dark"><%= job.applicant_count %></span>
+            </td>
+            <td class="text-center">
+              <a href="/jobs/<%= job.job_id %>" class="btn btn-sm btn-outline-secondary me-1" title="View">
+                <i class="bi bi-eye"></i>
+              </a>
+              <a href="/jobs/<%= job.job_id %>/edit" class="btn btn-sm btn-outline-primary me-1" title="Edit">
+                <i class="bi bi-pencil"></i>
+              </a>
+              <form action="/jobs/<%= job.job_id %>?_method=DELETE" method="POST" class="d-inline"
+                    onsubmit="return confirm('Delete this job? All applications will also be deleted.')">
+                <button type="submit" class="btn btn-sm btn-outline-danger" title="Delete">
+                  <i class="bi bi-trash"></i>
+                </button>
+              </form>
+            </td>
+          </tr>
+        <% }); %>
+      </tbody>
+    </table>
+  </div>
+<% } %>

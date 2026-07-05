@@ -1,0 +1,129 @@
+<!-- views/jobs/show.ejs — Full job detail + list of applicants (from stored procedure) -->
+
+<div class="d-flex justify-content-between align-items-start mb-3">
+  <div>
+    <h3 class="mb-1"><i class="bi bi-bag-check me-2 text-warning"></i><%= job.title %></h3>
+    <p class="text-muted mb-0">
+      <a href="/companies/<%= job.company_id %>" class="text-decoration-none">
+        <i class="bi bi-building me-1"></i><%= job.company_name %>
+      </a>
+      &nbsp;·&nbsp;<i class="bi bi-geo-alt me-1"></i><%= job.location %>
+    </p>
+  </div>
+  <div class="d-flex gap-1">
+    <a href="/jobs/<%= job.job_id %>/edit" class="btn btn-outline-primary btn-sm">
+      <i class="bi bi-pencil me-1"></i>Edit
+    </a>
+    <a href="/jobs" class="btn btn-outline-secondary btn-sm">
+      <i class="bi bi-arrow-left me-1"></i>Back
+    </a>
+  </div>
+</div>
+
+<!-- Job detail card -->
+<div class="card shadow-sm border-0 mb-4">
+  <div class="card-body">
+    <div class="row g-3 mb-3">
+      <div class="col-md-3">
+        <label class="text-muted small fw-semibold text-uppercase">Status</label>
+        <div>
+          <span class="badge fs-6 bg-<%= job.status === 'Open' ? 'success' : 'secondary' %>">
+            <%= job.status %>
+          </span>
+        </div>
+      </div>
+      <div class="col-md-3">
+        <label class="text-muted small fw-semibold text-uppercase">Salary</label>
+        <p class="mb-0 fw-semibold">
+          <% if (job.salary) { %>
+            ৳ <%= Number(job.salary).toLocaleString() %>/month
+          <% } else { %>
+            <span class="text-muted">Not specified</span>
+          <% } %>
+        </p>
+      </div>
+      <div class="col-md-3">
+        <label class="text-muted small fw-semibold text-uppercase">Deadline</label>
+        <p class="mb-0">
+          <%= new Date(job.deadline).toLocaleDateString('en-GB', { day:'numeric', month:'long', year:'numeric', timeZone: 'UTC' }) %>
+        </p>
+      </div>
+      <div class="col-md-3">
+        <label class="text-muted small fw-semibold text-uppercase">Company Email</label>
+        <p class="mb-0 small"><%= job.company_email %></p>
+      </div>
+    </div>
+
+    <% if (job.description) { %>
+      <hr />
+      <label class="text-muted small fw-semibold text-uppercase">Description</label>
+      <p class="mb-0 mt-1"><%= job.description %></p>
+    <% } %>
+  </div>
+</div>
+
+<!-- Applicants — result of sp_get_job_applicants() stored procedure -->
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h5 class="mb-0">
+    <i class="bi bi-people me-1"></i>Applicants
+    <span class="badge bg-secondary ms-1"><%= applicants.length %></span>
+  </h5>
+  <% if (job.status === 'Open') { %>
+    <a href="/applications/new" class="btn btn-sm btn-outline-warning">
+      <i class="bi bi-send-plus me-1"></i>Add Application
+    </a>
+  <% } %>
+</div>
+
+<% if (applicants.length === 0) { %>
+  <div class="alert alert-light">No applications submitted for this job yet.</div>
+<% } else { %>
+  <div class="table-responsive">
+    <table class="table table-sm table-hover table-bordered align-middle">
+      <thead class="table-light">
+        <tr>
+          <th>Student Name</th>
+          <th>Email</th>
+          <th>Department</th>
+          <th>Applied On</th>
+          <th class="text-center">Status</th>
+          <th class="text-center">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% applicants.forEach(app => { %>
+          <tr>
+            <td>
+              <a href="/students/<%= app.student_id %>" class="text-decoration-none fw-semibold">
+                <%= app.student_name %>
+              </a>
+            </td>
+            <td class="small"><%= app.student_email %></td>
+            <td><span class="badge bg-light text-dark border"><%= app.department %></span></td>
+            <td class="small text-muted">
+              <%= new Date(app.application_date).toLocaleDateString('en-GB', { timeZone: 'UTC' }) %>
+            </td>
+            <td class="text-center">
+              <span class="badge jn-badge-<%= app.application_status.toLowerCase() %>">
+                <%= app.application_status %>
+              </span>
+            </td>
+            <td class="text-center">
+              <a href="/applications/<%= app.application_id %>/edit"
+                 class="btn btn-xs btn-outline-primary me-1" title="Update status">
+                <i class="bi bi-pencil"></i>
+              </a>
+              <form action="/applications/<%= app.application_id %>?_method=DELETE"
+                    method="POST" class="d-inline"
+                    onsubmit="return confirm('Delete this application?')">
+                <button type="submit" class="btn btn-xs btn-outline-danger" title="Delete">
+                  <i class="bi bi-trash"></i>
+                </button>
+              </form>
+            </td>
+          </tr>
+        <% }); %>
+      </tbody>
+    </table>
+  </div>
+<% } %>

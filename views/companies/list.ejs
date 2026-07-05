@@ -1,0 +1,63 @@
+<!-- views/companies/list.ejs — All registered companies -->
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h3><i class="bi bi-building me-2"></i>Companies</h3>
+  <a href="/companies/new" class="btn btn-success btn-sm">
+    <i class="bi bi-building-add me-1"></i>Add Company
+  </a>
+</div>
+
+<% if (companies.length === 0) { %>
+  <div class="alert alert-info">
+    No companies registered yet. <a href="/companies/new">Add one!</a>
+  </div>
+<% } else { %>
+  <div class="table-responsive">
+    <table class="table table-hover table-bordered align-middle">
+      <thead class="table-success">
+        <tr>
+          <th>#</th>
+          <th>Company Name</th>
+          <th>Email</th>
+          <th>Location</th>
+          <th class="text-center">Jobs Posted</th>
+          <th class="text-center">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% companies.forEach((c, i) => { %>
+          <tr>
+            <td class="text-muted small"><%= i + 1 %></td>
+            <td>
+              <a href="/companies/<%= c.company_id %>" class="text-decoration-none fw-semibold">
+                <i class="bi bi-building me-1 text-success"></i><%= c.company_name %>
+              </a>
+            </td>
+            <td><%= c.email %></td>
+            <td><i class="bi bi-geo-alt me-1 text-muted"></i><%= c.location %></td>
+            <td class="text-center">
+              <span class="badge bg-<%= c.job_count > 0 ? 'success' : 'secondary' %>">
+                <%= c.job_count %>
+              </span>
+            </td>
+            <td class="text-center">
+              <a href="/companies/<%= c.company_id %>" class="btn btn-sm btn-outline-secondary me-1" title="View">
+                <i class="bi bi-eye"></i>
+              </a>
+              <a href="/companies/<%= c.company_id %>/edit" class="btn btn-sm btn-outline-primary me-1" title="Edit">
+                <i class="bi bi-pencil"></i>
+              </a>
+              <form action="/companies/<%= c.company_id %>?_method=DELETE" method="POST" class="d-inline"
+                    onsubmit="return confirm('Delete <%= c.company_name %>? This will also delete all their jobs and applications.')">
+                <button type="submit" class="btn btn-sm btn-outline-danger" title="Delete">
+                  <i class="bi bi-trash"></i>
+                </button>
+              </form>
+            </td>
+          </tr>
+        <% }); %>
+      </tbody>
+    </table>
+  </div>
+  <p class="text-muted small mt-1"><%= companies.length %> company/companies registered.</p>
+<% } %>

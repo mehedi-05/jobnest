@@ -1,0 +1,128 @@
+html, body {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background-color: #f8f9fa;
+  font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+}
+
+main.container {
+  flex: 1;
+}
+
+.navbar-brand {
+  letter-spacing: 0.03em;
+}
+
+.jn-hero {
+  background: linear-gradient(135deg, #0d6efd 0%, #0dcaf0 100%);
+  min-height: 110px;
+  padding: 2rem 1.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.jn-stat-icon {
+  font-size: 2rem;
+  line-height: 1;
+  margin-bottom: 0.25rem;
+}
+
+.jn-stat-number {
+  font-size: 2.2rem;
+  font-weight: 700;
+  line-height: 1.1;
+}
+
+.jn-job-card {
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.jn-job-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 20px rgba(0,0,0,0.10) !important;
+}
+
+   These mirror the ENUM values in the database schema.        */
+.jn-badge-pending {
+  background-color: #ffc107;
+  color: #212529;
+}
+
+.jn-badge-reviewed {
+  background-color: #0dcaf0;
+  color: #212529;
+}
+
+.jn-badge-accepted {
+  background-color: #198754;
+  color: #ffffff;
+}
+
+.jn-badge-rejected {
+  background-color: #dc3545;
+  color: #ffffff;
+}
+
+.btn-xs {
+  padding: 0.15rem 0.45rem;
+  font-size: 0.78rem;
+  border-radius: 0.25rem;
+}
+
+.table th {
+  font-size: 0.82rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.card {
+  border-radius: 0.6rem;
+}
+
+.footer {
+  margin-top: auto;
+  font-size: 0.85rem;
+}
+
+.jn-dev-link {
+  color: #ffffff;
+  font-weight: 600;
+  font-size: 0.875rem;
+  text-decoration: none;
+  letter-spacing: 0.02em;
+  position: relative;
+  padding-bottom: 2px;
+  transition: color 0.25s ease;
+}
+
+.jn-dev-link::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 0;
+  height: 2px;
+  background: linear-gradient(90deg, #0dcaf0, #0d6efd);
+  border-radius: 2px;
+  transition: width 0.3s ease;
+}
+
+.jn-dev-link:hover {
+  color: #0dcaf0;
+}
+
+.jn-dev-link:hover::after {
+  width: 100%;
+}
+
+.form-label.fw-semibold {
+  color: #343a40;
+}
+
+@media (max-width: 576px) {
+  .jn-stat-number { font-size: 1.8rem; }
+  .jn-hero { min-height: 80px; padding: 1.5rem 1rem; }
+}
