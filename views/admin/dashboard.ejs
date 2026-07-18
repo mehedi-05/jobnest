@@ -1,0 +1,475 @@
+<%# views/admin/dashboard.ejs — Admin Panel (no login required) %>
+<% layout = false %>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin Panel — JobNest</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+        rel="stylesheet"
+        integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH"
+        crossorigin="anonymous"/>
+  <link rel="stylesheet"
+        href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"/>
+  <style>
+    /* ── Layout ─────────────────────────────────────────────── */
+    body { margin:0; background:#f1f5f9; font-family:'Segoe UI',system-ui,sans-serif; }
+
+    .adm-wrapper { display:flex; min-height:100vh; }
+
+    /* ── Sidebar ─────────────────────────────────────────────── */
+    .adm-sidebar {
+      width: 240px;
+      min-width: 240px;
+      background: #0f172a;
+      display: flex;
+      flex-direction: column;
+      position: fixed;
+      top: 0; left: 0; bottom: 0;
+      z-index: 100;
+    }
+
+    .adm-brand {
+      padding: 1.4rem 1.5rem 1.1rem;
+      border-bottom: 1px solid #1e293b;
+    }
+    .adm-brand .title {
+      font-size: 1.2rem; font-weight: 700;
+      color: #ffffff; letter-spacing: 0.01em;
+    }
+    .adm-brand .sub {
+      font-size: 0.72rem; color: #64748b;
+      text-transform: uppercase; letter-spacing: 0.08em;
+      margin-top: 2px;
+    }
+
+    .adm-nav { flex: 1; padding: 1rem 0.75rem; }
+
+    .adm-nav-label {
+      font-size: 0.68rem; font-weight: 700; color: #475569;
+      text-transform: uppercase; letter-spacing: 0.1em;
+      padding: 0.5rem 0.75rem 0.3rem;
+      margin-top: 0.5rem;
+    }
+
+    .adm-nav a {
+      display: flex; align-items: center; gap: 0.65rem;
+      padding: 0.58rem 0.85rem;
+      border-radius: 0.5rem;
+      text-decoration: none;
+      font-size: 0.9rem; font-weight: 500;
+      color: #94a3b8;
+      margin-bottom: 2px;
+      transition: all 0.18s ease;
+    }
+    .adm-nav a:hover { background: #1e293b; color: #e2e8f0; }
+    .adm-nav a.active { background: #1d4ed8; color: #ffffff; }
+    .adm-nav a i { font-size: 1rem; width: 20px; text-align: center; }
+
+    .adm-nav .divider {
+      border-top: 1px solid #1e293b;
+      margin: 0.75rem 0;
+    }
+
+    .adm-footer-link {
+      padding: 1rem 1.5rem;
+      border-top: 1px solid #1e293b;
+    }
+    .adm-footer-link a {
+      display: flex; align-items: center; gap: 0.5rem;
+      font-size: 0.85rem; color: #64748b;
+      text-decoration: none;
+      transition: color 0.18s;
+    }
+    .adm-footer-link a:hover { color: #94a3b8; }
+
+    /* ── Main content ────────────────────────────────────────── */
+    .adm-main {
+      margin-left: 240px;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .adm-topbar {
+      background: #ffffff;
+      border-bottom: 1px solid #e2e8f0;
+      padding: 0.9rem 1.75rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .adm-topbar .page-title {
+      font-size: 1.15rem; font-weight: 700; color: #0f172a;
+    }
+    .adm-topbar .badge-admin {
+      background: #eff6ff; color: #1d4ed8;
+      font-size: 0.75rem; font-weight: 600;
+      padding: 0.3rem 0.75rem; border-radius: 2rem;
+      border: 1px solid #bfdbfe;
+    }
+
+    .adm-body { padding: 1.75rem; }
+
+    /* ── Stat cards ──────────────────────────────────────────── */
+    .stat-card {
+      background: #ffffff;
+      border-radius: 0.75rem;
+      padding: 1.25rem 1.5rem;
+      border: 1px solid #e2e8f0;
+      box-shadow: 0 1px 8px rgba(0,0,0,0.05);
+      display: flex; align-items: center; gap: 1rem;
+    }
+    .stat-icon {
+      width: 52px; height: 52px; border-radius: 0.65rem;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.4rem; flex-shrink: 0;
+    }
+    .stat-num { font-size: 1.9rem; font-weight: 700; line-height: 1; color: #0f172a; }
+    .stat-lbl { font-size: 0.82rem; color: #64748b; margin-top: 2px; }
+
+    /* ── Section card ────────────────────────────────────────── */
+    .adm-card {
+      background: #ffffff;
+      border-radius: 0.75rem;
+      border: 1px solid #e2e8f0;
+      box-shadow: 0 1px 8px rgba(0,0,0,0.05);
+      overflow: hidden;
+    }
+    .adm-card-header {
+      padding: 0.9rem 1.25rem;
+      border-bottom: 1px solid #f1f5f9;
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .adm-card-header .ttl {
+      font-size: 0.95rem; font-weight: 700; color: #1e293b;
+    }
+    .adm-card-header a {
+      font-size: 0.82rem; color: #2563eb; text-decoration: none;
+    }
+    .adm-card-header a:hover { text-decoration: underline; }
+
+    /* ── Tables ──────────────────────────────────────────────── */
+    .adm-table { width: 100%; border-collapse: collapse; font-size: 0.875rem; }
+    .adm-table th {
+      background: #f8fafc; color: #64748b;
+      font-size: 0.72rem; font-weight: 700;
+      text-transform: uppercase; letter-spacing: 0.06em;
+      padding: 0.6rem 1rem; border-bottom: 1px solid #e2e8f0;
+      text-align: left;
+    }
+    .adm-table td {
+      padding: 0.65rem 1rem; color: #334155;
+      border-bottom: 1px solid #f1f5f9;
+    }
+    .adm-table tr:last-child td { border-bottom: none; }
+    .adm-table tr:hover td { background: #f8fafc; }
+
+    /* ── Status badges ───────────────────────────────────────── */
+    .badge-pending  { background:#fef3c7; color:#92400e; font-size:.75rem; font-weight:600; padding:.22rem .65rem; border-radius:2rem; }
+    .badge-reviewed { background:#e0f2fe; color:#0369a1; font-size:.75rem; font-weight:600; padding:.22rem .65rem; border-radius:2rem; }
+    .badge-accepted { background:#dcfce7; color:#166534; font-size:.75rem; font-weight:600; padding:.22rem .65rem; border-radius:2rem; }
+    .badge-rejected { background:#fee2e2; color:#991b1b; font-size:.75rem; font-weight:600; padding:.22rem .65rem; border-radius:2rem; }
+    .badge-open     { background:#dcfce7; color:#166534; font-size:.75rem; font-weight:600; padding:.22rem .65rem; border-radius:2rem; }
+    .badge-closed   { background:#f1f5f9; color:#64748b; font-size:.75rem; font-weight:600; padding:.22rem .65rem; border-radius:2rem; }
+
+    /* ── Quick actions ───────────────────────────────────────── */
+    .quick-btn {
+      display: flex; align-items: center; gap: 0.5rem;
+      padding: 0.6rem 1.1rem; border-radius: 0.5rem;
+      font-size: 0.875rem; font-weight: 600;
+      text-decoration: none; border: 1.5px solid transparent;
+      transition: all 0.18s ease;
+    }
+    .quick-btn:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+
+    /* ── Responsive: sidebar collapses on small screens ─────── */
+    @media (max-width: 768px) {
+      .adm-sidebar { width: 100%; min-width: unset; position: relative; height: auto; }
+      .adm-main { margin-left: 0; }
+      .adm-wrapper { flex-direction: column; }
+    }
+  </style>
+</head>
+<body>
+<div class="adm-wrapper">
+
+  <!-- ══ SIDEBAR ══════════════════════════════════════════════ -->
+  <aside class="adm-sidebar">
+    <div class="adm-brand">
+      <div class="title"><i class="bi bi-briefcase-fill me-2" style="color:#3b82f6;"></i>JobNest</div>
+      <div class="sub">Admin Panel</div>
+    </div>
+
+    <nav class="adm-nav">
+      <div class="adm-nav-label">Main</div>
+
+      <a href="/admin" class="active">
+        <i class="bi bi-grid-1x2-fill"></i> Dashboard
+      </a>
+
+      <div class="adm-nav-label" style="margin-top:1rem;">Manage</div>
+
+      <a href="/students">
+        <i class="bi bi-people-fill"></i> Students
+        <span class="ms-auto badge" style="background:#1e293b;color:#94a3b8;font-size:.72rem;"><%= stats.students %></span>
+      </a>
+
+      <a href="/companies">
+        <i class="bi bi-building"></i> Companies
+        <span class="ms-auto badge" style="background:#1e293b;color:#94a3b8;font-size:.72rem;"><%= stats.companies %></span>
+      </a>
+
+      <a href="/jobs">
+        <i class="bi bi-bag-check-fill"></i> Jobs
+        <span class="ms-auto badge" style="background:#1e293b;color:#94a3b8;font-size:.72rem;"><%= stats.jobs %></span>
+      </a>
+
+      <a href="/applications">
+        <i class="bi bi-file-earmark-text-fill"></i> Applications
+        <span class="ms-auto badge" style="background:#1e293b;color:#94a3b8;font-size:.72rem;"><%= stats.applications %></span>
+      </a>
+
+      <div class="divider"></div>
+
+      <a href="/students/new">
+        <i class="bi bi-person-plus"></i> Add Student
+      </a>
+      <a href="/companies/new">
+        <i class="bi bi-building-add"></i> Add Company
+      </a>
+      <a href="/jobs/new">
+        <i class="bi bi-plus-circle"></i> Post Job
+      </a>
+      <a href="/applications/new">
+        <i class="bi bi-send-plus"></i> New Application
+      </a>
+    </nav>
+
+    <div class="adm-footer-link">
+      <a href="/"><i class="bi bi-arrow-left"></i> Back to Main Site</a>
+    </div>
+  </aside>
+
+  <!-- ══ MAIN CONTENT ═════════════════════════════════════════ -->
+  <div class="adm-main">
+
+    <!-- Top bar -->
+    <div class="adm-topbar">
+      <span class="page-title">Dashboard Overview</span>
+      <span class="badge-admin"><i class="bi bi-shield-check me-1"></i>Admin Panel</span>
+    </div>
+
+    <div class="adm-body">
+
+      <!-- ── Stat cards ─────────────────────────────────────── -->
+      <div class="row g-3 mb-4">
+        <div class="col-6 col-xl-3">
+          <div class="stat-card">
+            <div class="stat-icon" style="background:#eff6ff;">
+              <i class="bi bi-people-fill" style="color:#2563eb;"></i>
+            </div>
+            <div>
+              <div class="stat-num"><%= stats.students %></div>
+              <div class="stat-lbl">Total Students</div>
+            </div>
+          </div>
+        </div>
+        <div class="col-6 col-xl-3">
+          <div class="stat-card">
+            <div class="stat-icon" style="background:#f0fdf4;">
+              <i class="bi bi-building" style="color:#16a34a;"></i>
+            </div>
+            <div>
+              <div class="stat-num"><%= stats.companies %></div>
+              <div class="stat-lbl">Companies</div>
+            </div>
+          </div>
+        </div>
+        <div class="col-6 col-xl-3">
+          <div class="stat-card">
+            <div class="stat-icon" style="background:#fffbeb;">
+              <i class="bi bi-bag-check-fill" style="color:#d97706;"></i>
+            </div>
+            <div>
+              <div class="stat-num"><%= stats.jobs %></div>
+              <div class="stat-lbl">Open Jobs</div>
+            </div>
+          </div>
+        </div>
+        <div class="col-6 col-xl-3">
+          <div class="stat-card">
+            <div class="stat-icon" style="background:#fdf4ff;">
+              <i class="bi bi-file-earmark-text-fill" style="color:#9333ea;"></i>
+            </div>
+            <div>
+              <div class="stat-num"><%= stats.applications %></div>
+              <div class="stat-lbl">Applications</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── Quick Actions ──────────────────────────────────── -->
+      <div class="adm-card mb-4">
+        <div class="adm-card-header">
+          <span class="ttl"><i class="bi bi-lightning-charge-fill me-2" style="color:#f59e0b;"></i>Quick Actions</span>
+        </div>
+        <div class="p-3 d-flex flex-wrap gap-2">
+          <a href="/students/new" class="quick-btn" style="background:#eff6ff;color:#1d4ed8;border-color:#bfdbfe;">
+            <i class="bi bi-person-plus"></i> Add Student
+          </a>
+          <a href="/companies/new" class="quick-btn" style="background:#f0fdf4;color:#15803d;border-color:#bbf7d0;">
+            <i class="bi bi-building-add"></i> Add Company
+          </a>
+          <a href="/jobs/new" class="quick-btn" style="background:#fffbeb;color:#b45309;border-color:#fde68a;">
+            <i class="bi bi-plus-circle"></i> Post Job
+          </a>
+          <a href="/applications/new" class="quick-btn" style="background:#fdf4ff;color:#7e22ce;border-color:#e9d5ff;">
+            <i class="bi bi-send-plus"></i> New Application
+          </a>
+        </div>
+      </div>
+
+      <!-- ── Two column: Recent Students + Recent Applications ─ -->
+      <div class="row g-3 mb-4">
+
+        <!-- Recent Students -->
+        <div class="col-lg-6">
+          <div class="adm-card h-100">
+            <div class="adm-card-header">
+              <span class="ttl"><i class="bi bi-people me-2" style="color:#2563eb;"></i>Recent Students</span>
+              <a href="/students">View all →</a>
+            </div>
+            <% if (recentStudents.length === 0) { %>
+              <div class="p-4 text-center text-muted small">No students yet.</div>
+            <% } else { %>
+              <table class="adm-table">
+                <thead>
+                  <tr>
+                    <th>#</th>
+                    <th>Name</th>
+                    <th>Department</th>
+                    <th>Sem</th>
+                    <th></th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <% recentStudents.forEach((s, i) => { %>
+                    <tr>
+                      <td class="text-muted"><%= i + 1 %></td>
+                      <td><a href="/students/<%= s.student_id %>" style="color:#1e293b;text-decoration:none;font-weight:600;"><%= s.name %></a></td>
+                      <td><%= s.department %></td>
+                      <td class="text-center"><%= s.semester %></td>
+                      <td>
+                        <a href="/students/<%= s.student_id %>/edit" class="text-muted" title="Edit">
+                          <i class="bi bi-pencil-square"></i>
+                        </a>
+                      </td>
+                    </tr>
+                  <% }); %>
+                </tbody>
+              </table>
+            <% } %>
+          </div>
+        </div>
+
+        <!-- Recent Applications -->
+        <div class="col-lg-6">
+          <div class="adm-card h-100">
+            <div class="adm-card-header">
+              <span class="ttl"><i class="bi bi-file-earmark-text me-2" style="color:#9333ea;"></i>Recent Applications</span>
+              <a href="/applications">View all →</a>
+            </div>
+            <% if (recentApplications.length === 0) { %>
+              <div class="p-4 text-center text-muted small">No applications yet.</div>
+            <% } else { %>
+              <table class="adm-table">
+                <thead>
+                  <tr>
+                    <th>#</th>
+                    <th>Student</th>
+                    <th>Job</th>
+                    <th>Status</th>
+                    <th></th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <% recentApplications.forEach((a, i) => { %>
+                    <tr>
+                      <td class="text-muted"><%= i + 1 %></td>
+                      <td style="font-weight:600;color:#1e293b;"><%= a.student_name %></td>
+                      <td class="text-muted small"><%= a.job_title %></td>
+                      <td>
+                        <span class="badge-<%= a.application_status.toLowerCase() %>">
+                          <%= a.application_status %>
+                        </span>
+                      </td>
+                      <td>
+                        <a href="/applications/<%= a.application_id %>/edit" class="text-muted" title="Update status">
+                          <i class="bi bi-pencil-square"></i>
+                        </a>
+                      </td>
+                    </tr>
+                  <% }); %>
+                </tbody>
+              </table>
+            <% } %>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── Recent Jobs ─────────────────────────────────────── -->
+      <div class="adm-card mb-2">
+        <div class="adm-card-header">
+          <span class="ttl"><i class="bi bi-bag-check me-2" style="color:#d97706;"></i>Job Listings</span>
+          <a href="/jobs">View all →</a>
+        </div>
+        <% if (recentJobs.length === 0) { %>
+          <div class="p-4 text-center text-muted small">No jobs posted yet.</div>
+        <% } else { %>
+          <table class="adm-table">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Job Title</th>
+                <th>Company</th>
+                <th>Deadline</th>
+                <th>Status</th>
+                <th>Applicants</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody>
+              <% recentJobs.forEach((j, i) => { %>
+                <tr>
+                  <td class="text-muted"><%= i + 1 %></td>
+                  <td><a href="/jobs/<%= j.job_id %>" style="color:#1e293b;text-decoration:none;font-weight:600;"><%= j.title %></a></td>
+                  <td class="text-muted"><%= j.company_name %></td>
+                  <td class="text-muted small"><%= new Date(j.deadline).toLocaleDateString('en-GB', {timeZone:'UTC'}) %></td>
+                  <td><span class="badge-<%= j.status.toLowerCase() %>"><%= j.status %></span></td>
+                  <td class="text-center">
+                    <span style="background:#f1f5f9;color:#475569;font-size:.75rem;font-weight:600;padding:.22rem .65rem;border-radius:2rem;">
+                      <%= j.applicant_count %>
+                    </span>
+                  </td>
+                  <td>
+                    <a href="/jobs/<%= j.job_id %>/edit" class="text-muted me-2" title="Edit"><i class="bi bi-pencil-square"></i></a>
+                  </td>
+                </tr>
+              <% }); %>
+            </tbody>
+          </table>
+        <% } %>
+      </div>
+
+    </div><!-- /adm-body -->
+  </div><!-- /adm-main -->
+</div><!-- /adm-wrapper -->
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-YvpcrYf0tY3lHB60NNkmXc4s9bIOgUxi8T/jzmJWCqZjKoWbHhAAFSoIgSmGmIaK"
+        crossorigin="anonymous"></script>
+</body>
+</html>

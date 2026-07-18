@@ -58,6 +58,42 @@ app.get('/', async (req, res, next) => {
   }
 });
 
+const pool = require('./config/db');
+
+app.get('/admin', async (req, res, next) => {
+  try {
+    const [[s]] = await pool.query('SELECT COUNT(*) AS students FROM Students');
+    const [[c]] = await pool.query('SELECT COUNT(*) AS companies FROM Companies');
+    const [[j]] = await pool.query("SELECT COUNT(*) AS jobs FROM Jobs WHERE status = 'Open'");
+    const [[a]] = await pool.query('SELECT COUNT(*) AS applications FROM Applications');
+
+    const [recentStudents] = await pool.query(
+      'SELECT * FROM Students ORDER BY created_at DESC LIMIT 5'
+    );
+    const [recentApplications] = await pool.query(
+      'SELECT * FROM vw_application_details ORDER BY application_date DESC LIMIT 5'
+    );
+    const [recentJobs] = await pool.query(`
+      SELECT j.*, c.company_name, COUNT(a.application_id) AS applicant_count
+      FROM   Jobs j
+      JOIN   Companies c ON j.company_id = c.company_id
+      LEFT   JOIN Applications a ON j.job_id = a.job_id
+      GROUP  BY j.job_id
+      ORDER  BY j.posted_at DESC
+      LIMIT  8
+    `);
+
+    res.render('admin/dashboard', {
+      title              : 'Admin Panel',
+      stats              : { students: s.students, companies: c.companies, jobs: j.jobs, applications: a.applications },
+      recentStudents,
+      recentApplications,
+      recentJobs
+    });
+  } catch (err) {
+    next(err);
+  }
+});
 
 app.use(notFoundHandler);
 app.use(errorHandler);
