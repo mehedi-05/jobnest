@@ -31,6 +31,7 @@ A full-stack web application that allows students to browse job listings, and co
 - Update application status (Pending, Reviewed, Accepted, Rejected)
 - Full CRUD operations across all four entities
 - Server-side input validation on all forms
+- Admin panel for centralized management of all records
 
 ---
 
@@ -127,6 +128,12 @@ jobnest/
 ## Sample Data
 
 The SQL script loads sample data including 6 students, 4 companies, 8 job listings, and 10 applications so the application can be tested immediately after setup.
+
+---
+
+## Admin Panel
+
+No login required. The panel provides an overview of all records with quick access to add, edit, and delete operations.
 
 ---
 
